@@ -22,5 +22,3 @@ class NeuralNetwork:
 if __name__ == '__main__':
     net = NeuralNetwork()
     net.read_file()
-
-    print(len(net.input_matrices))
