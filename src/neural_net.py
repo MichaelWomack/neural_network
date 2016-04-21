@@ -1,4 +1,5 @@
-import random, math
+import random
+import math
 
 
 class NeuralNetwork(object):
@@ -9,9 +10,8 @@ class NeuralNetwork(object):
     def __init__(self):
         self.layers = []
         self.weights = []
-        self.NUM_HIDDEN_LAYERS = 1  # includes output layer
+        self.NUM_HIDDEN_LAYERS = 1
         self.NODES_PER_LAYER = 0
-
 
     def init_weights(self):
         pass
@@ -19,7 +19,6 @@ class NeuralNetwork(object):
     # activation function
     def sigmoid_func(self, x):
         return 1 / (1 + math.exp(-x))
-
 
     def sigmoid_inverse(self, x):
         return x * (1 + math.exp(-x))
@@ -63,30 +62,40 @@ def back_prop_learning(input_data, network):
             inputs.append(element)
 
         # for each hidden layer --> 1 for now l for L
-        for layer_index in range(1, network.NUM_HIDDEN_LAYERS):
+        layers = []
+        for layer_index in range(1, network.NUM_HIDDEN_LAYERS + 2):  # includes output layer
 
             # if layer_index is > 0 --> num nodes = NODES PER LAYER
             # if layer_index == L (output layer) nodes are --> 0-9
 
-            hidden_layer_outputs = []
-            for node_index in range(network.NODES_PER_LAYER):  # -->  j elements
+            num_layer_nodes = network.NODES_PER_LAYER
+            if layer_index == network.NUM_HIDDEN_LAYERS + 1:  # output layer has 10 nodes
+                num_layer_nodes = 10
+
+            layer_outputs = []
+            for node_index in range(num_layer_nodes):  # -->  j elements
+
+                # determine correct number of inputs for this layer
+                if layer_index == 1:
+                    num_layer_inputs = len(inputs)  # first hidden layer has different number of inputs
+                else:
+                    num_layer_inputs = network.NODES_PER_LAYER
 
                 summation = 0
-                if layer_index != 0:
-                    num_hidden_layer_nodes = network.NODES_PER_LAYER
-                else:
-                    num_hidden_layer_nodes = len(inputs)
-
-                for i in range(num_hidden_layer_nodes):  # all the input node indices
+                for i in range(num_layer_inputs):  # all the input nodes feeding into this layer
                     summation = summation + (network.weights[i * node_index] * int(inputs[i]))
 
                 output_value = network.sigmoid_func(summation)
-                hidden_layer_outputs.append(output_value)
+                layer_outputs.append(output_value)
+
+            layers.append(layer_outputs) # a sub j values
+
 
             # Propagate deltas backward from output layer to input layer
 
-
-
+        for node_index in range(10):  # for each output layer node
+            class_code = matrix[64]
+            # calculate deltas
 
 if __name__ == '__main__':
     ann = NeuralNetwork()
