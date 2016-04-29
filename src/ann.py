@@ -61,7 +61,7 @@ def read_file(file_path):
     return input_matrices
 
 
-def back_prop_learning(input_vectors, network):
+def back_prop_learning(input_vectors, network, backprop=True):
     deltas = []
 
     num_inputs = len(input_vectors[0]) - 1
@@ -86,6 +86,8 @@ def back_prop_learning(input_vectors, network):
 
                 node.value = sigmoid(summation)
 
+        if backprop:
+            # calculate deltas from
 
 if __name__ == '__main__':
     inputs = read_file('../resources/optdigits_train.txt')
