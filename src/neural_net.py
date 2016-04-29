@@ -13,9 +13,6 @@ class NeuralNetwork(object):
         self.NUM_HIDDEN_LAYERS = 1
         self.NODES_PER_LAYER = 0
 
-    def init_weights(self):
-        pass
-
     # activation function
     def sigmoid_func(self, x):
         return 1 / (1 + math.exp(-x))
