@@ -4,8 +4,8 @@ class Node(object):
 
     def __init__(self):
         self.value = None
-        self.weight = None
-        self.weighted_sum = None
+        self.weights = []
+        self.weighted_input_sum = None
 
     def __str__(self):
-        return 'Value: {}\t Weight: {}'.format(self.value, self.weight)
+        return 'Value: {}\t Weight: {}'.format(self.value, self.weights)

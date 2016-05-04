@@ -6,8 +6,8 @@ NUM_CLASS_CODES = 10
 NUM_BIASED_NODES = 1 # per layer
 
 class NeuralNet(object):
-    def __init__(self, num_layers):
-        self.num_hidden_layers = num_layers
+    def __init__(self, hidden_layers):
+        self.num_hidden_layers = hidden_layers
         self.nodes_per_hl = 0
         self.layers = None
 
@@ -32,9 +32,14 @@ class NeuralNet(object):
             layer_nodes = []
             for node_index in range(nodes_per_layer): # includes bias node
                 node = Node()
-
-                node.weight = (random.random() / 100) + .001
                 layer_nodes.append(node)
+
+                # generate weighted link from previous layer's nodes to this layer node
+                if layer_index != 0 and node_index != (nodes_per_layer - 1): # don't do the biased node
+                    prev_layer = layers[layer_index - 1]
+                    for layer_node in prev_layer:
+                        weight = (random.random() / 100) + .001
+                        layer_node.weights.append(weight)
 
             layers.append(layer_nodes)
 
@@ -82,9 +87,11 @@ def back_prop_learning(input_vectors, network, backprop=True):
                 # inputs are the previous layer's nodes
                 layers = network.layers
                 inputs = network.layers[layers.index(layer) - 1]
+                j_index = layer.index(node)
                 summation = 0
                 for input in inputs:
-                    summation += (input.value * input.weight)
+                    i_index = inputs.index(input)
+                    summation += (input.value * input.weights[i_index * j_index])
 
                 node.weighted_sum = summation
                 node.value = sigmoid(summation)
