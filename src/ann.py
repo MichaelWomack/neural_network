@@ -3,7 +3,8 @@ import random
 from node import Node
 
 NUM_CLASS_CODES = 10
-NUM_BIASED_NODES = 1 # per layer
+BIASED_NODE = 1 # per layer
+LEARNING_RATE = .1
 
 class NeuralNet(object):
     def __init__(self, hidden_layers):
@@ -26,7 +27,7 @@ class NeuralNet(object):
 
             # hidden layer
             else:
-                nodes_per_layer = int(num_inputs / 2) + NUM_BIASED_NODES # + 1 for bias node
+                nodes_per_layer = int(num_inputs / 2) + BIASED_NODE # + 1 for bias node
 
             # generate small random weights for nodes, then add to layer
             layer_nodes = []
@@ -34,14 +35,14 @@ class NeuralNet(object):
                 node = Node()
                 layer_nodes.append(node)
 
-                # generate weighted link from previous layer's nodes to this layer node
-                if layer_index != 0 and node_index != (nodes_per_layer - 1): # don't do the biased node
-                    prev_layer = layers[layer_index - 1]
-                    for layer_node in prev_layer:
-                        weight = (random.random() / 100) + .001
-                        layer_node.weights.append(weight)
-
             layers.append(layer_nodes)
+
+        # generate weights
+        for layer in layers[1:]:
+            prev_layer = layers[layers.index(layer) - 1]
+            num_weights = len(prev_layer) * len(layer)
+            for node in prev_layer:
+                node.weights = [(random.random() / 100) + .001 for weight in range(num_weights)]
 
         self.layers = layers
 
@@ -49,9 +50,14 @@ class NeuralNet(object):
 def sigmoid(x):
     return 1 / (1 + math.exp(-x))
 
-# derivative
 def sigmoid_inverse(x):
-    return x * (1 + math.exp(-x))
+    activation = sigmoid(x)
+    return activation * (1 - activation)
+
+# derivative
+def derivative(x):
+    return math.exp(x) / pow((math.exp(x) + 1), 2)
+
 
 
 def read_file(file_path):
@@ -82,7 +88,7 @@ def back_prop_learning(input_vectors, network, backprop=True):
             network.layers[0][element_index].value = int(matrix[element_index])
 
         for layer in network.layers[1:]:
-            print("Layer: {}".format(network.layers.index(layer)))
+            print("Layer: {}\tLength: {}".format(network.layers.index(layer), len(layer)))
             for node in layer:
                 # inputs are the previous layer's nodes
                 layers = network.layers
@@ -98,20 +104,21 @@ def back_prop_learning(input_vectors, network, backprop=True):
                 print(node.value)
 
 
-        ### back propagation ###
-        # for each node in output layer
-            # delta_k = err_k * inverse(in_k)
-            #update rule --> weight from
+        # ### back propagation ###
+        # # for each node in output layer
+        #     # delta_k = err_k * inverse(in_k)
+        #     #update rule --> weight from
         output_layer_index = len(network.layers) - 1
-        for node in network.layers[output_layer_index]:
-            delta = (node.weight - node.value) * sigmoid_inverse(node.weighted_sum)
+        output_layer = network.layers[output_layer_index]
+        for node in output_layer:
+            delta = (int(class_code) - node.value) * sigmoid_inverse(node.weighted_sum)
             deltas.append(delta)
+
+
 
         for layer in reversed(network.layers[:output_layer_index]):
             for node in layer:
-                err_sum = 0
-                for delta_j in deltas:
-                    err_sum += node.weight
+             pass
 
 
 
@@ -119,5 +126,5 @@ def back_prop_learning(input_vectors, network, backprop=True):
 
 if __name__ == '__main__':
     inputs = read_file('../resources/optdigits_train.txt')
-    net = NeuralNet(2)
+    net = NeuralNet(1)
     back_prop_learning(inputs, net)
