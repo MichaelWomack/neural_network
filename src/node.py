@@ -6,6 +6,7 @@ class Node(object):
         self.value = None
         self.weights = []
         self.weighted_input_sum = None
+        self.delta = None
 
     def __str__(self):
         return 'Value: {}\t Weight: {}'.format(self.value, self.weights)

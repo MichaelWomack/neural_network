@@ -73,6 +73,13 @@ def read_file(file_path):
     return input_matrices
 
 
+def get_error_gradient(node_j, node_k):
+    weighted_sum = 0
+    for weight in node_j.weights:
+        weighted_sum += weight * node_k.delta
+    return weighted_sum
+
+
 def back_prop_learning(input_vectors, network, backprop=True):
     deltas = []
 
@@ -86,6 +93,7 @@ def back_prop_learning(input_vectors, network, backprop=True):
         # Weight already initialized
         for element_index in range(len(matrix) - 1):
             network.layers[0][element_index].value = int(matrix[element_index])
+
 
         for layer in network.layers[1:]:
             print("Layer: {}\tLength: {}".format(network.layers.index(layer), len(layer)))
@@ -108,17 +116,39 @@ def back_prop_learning(input_vectors, network, backprop=True):
         # # for each node in output layer
         #     # delta_k = err_k * inverse(in_k)
         #     #update rule --> weight from
+
+        # get error gradient for output nodes
         output_layer_index = len(network.layers) - 1
         output_layer = network.layers[output_layer_index]
         for node in output_layer:
-            delta = (int(class_code) - node.value) * sigmoid_inverse(node.weighted_sum)
-            deltas.append(delta)
+            # get node error gradient (output layer)
+            delta = (int(class_code) - node.value) * sigmoid_inverse(node.value)
+            node.delta = delta
 
 
+        # from output layer to input
 
+        # hidden layer -- output layer gradient == learning rate * current node value
         for layer in reversed(network.layers[:output_layer_index]):
-            for node in layer:
-             pass
+            prev_layer_index = network.layers.index(layer) + 1
+            prev_layer = network.layers[prev_layer_index]
+
+            for node_j in layer:
+
+                for node_k in prev_layer:
+
+                    j = layer.index(node_j)
+                    k = prev_layer.index(node_k)
+
+                    node_j.delta = get_error_gradient(node_j, node_k)
+                    node_j.weights[j * k] += LEARNING_RATE * node_j.value * node_k.delta
+                    print(node_j.delta)
+                    print(node_j.weights)
+
+
+
+
+
 
 
 
