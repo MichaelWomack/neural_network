@@ -10,4 +10,4 @@ class Node(object):
         self.expected = None
 
     def __str__(self):
-        return 'Value: {}\t Weight: {}'.format(self.value, self.weights)
+        return 'Value: {}\t Weights: {}\tExpected: {}'.format(self.value, self.weights, self.expected)
